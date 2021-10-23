@@ -1,9 +1,9 @@
 from helper.linkedin_helper import linkedin_profile_baseurl as profile_baseurl, linkedin_exampleurl as example_url, login, validate_profile_url
-from helper.driver_helper import configure_driver as configure, scroll_down, scroll_until_find_by_class_name
-from user_profile import UserProfile, get_user_profile
+from helper.driver_helper import configure_driver as configure
+from models.user_profile import UserProfile, get_user_profile
 
 driver_path = 'COSC419F-Project/assets/driver/chromedriver.exe'
-is_headless = False
+is_headless = True
 
 # APPLICATION START
 

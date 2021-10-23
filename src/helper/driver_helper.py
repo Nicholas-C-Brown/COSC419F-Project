@@ -47,4 +47,3 @@ def scroll_until_find_by_class_name(class_name: str, driver: WebDriver, parent=N
 
 
 
-
