@@ -1,7 +1,7 @@
 from typing import List
 from selenium.webdriver.chrome.webdriver import WebDriver
 from helper.driver_helper import scroll_until_find_by_class_name
-from work_experience import WorkExperience
+from models.work_experience import WorkExperience
 
 class UserProfile:
 
