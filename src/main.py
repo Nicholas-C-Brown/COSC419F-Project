@@ -17,7 +17,7 @@ linkedin_profile_baseurl = "https://www.linkedin.com/in/"
 print("Enter your LinkedIn profile URL.")
 url = linkedin_profile_baseurl + input(linkedin_profile_baseurl)
 
-if(not validators.url(url)):
+if not validators.url(url):
     print("\nPlease enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
     exit(1)
 
