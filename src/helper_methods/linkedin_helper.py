@@ -3,6 +3,8 @@ import time
 import validators
 
 # Dummy profile credentials
+from selenium.webdriver.common.by import By
+
 username = "cardiacexorcist+1@gmail.com"
 password = "419CEpicStyle"
 
@@ -20,8 +22,8 @@ linkedin_exampleurl = linkedin_profile_baseurl + "nicholas-c-brown"
 def login(driver: webdriver):
     driver.get(linkedin_loginurl)
 
-    usernamefield = driver.find_element_by_id("username")
-    passwordfield = driver.find_element_by_id("password")
+    usernamefield = driver.find_element(By.ID, "username")
+    passwordfield = driver.find_element(By.ID, "password")
 
     passwordfield.send_keys(password)
     time.sleep(0.1)

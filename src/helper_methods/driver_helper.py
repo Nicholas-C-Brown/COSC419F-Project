@@ -38,9 +38,9 @@ def scroll_until_find_by_class_name(class_name: str, driver: WebDriver, parent=N
     while element is None:
         try:
             if parent is None:
-                element = driver.find_element(By.CLASS_NAME(class_name))
+                element = driver.find_element(By.CLASS_NAME, class_name)
             else:
-                element = parent.find_element(By.CLASS_NAME(class_name))
+                element = parent.find_element(By.CLASS_NAME, class_name)
         except NoSuchElementException:
             scroll_down(driver)
             new_pos = driver.execute_script(get_window_y_script)

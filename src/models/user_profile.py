@@ -50,14 +50,14 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     driver.get(url)
 
     # Get user's name
-    name = driver.find_element(By.CLASS_NAME('text-heading-xlarge.inline.t-24.v-align-middle.break-words')).text
+    name = driver.find_element(By.CLASS_NAME, 'text-heading-xlarge.inline.t-24.v-align-middle.break-words').text
 
     # Get user's bio
-    profile_section = driver.find_element(By.CLASS_NAME('profile-detail'))
+    profile_section = driver.find_element(By.CLASS_NAME, 'profile-detail')
     bio: str = ""
     try:
         bio = profile_section.find_element(
-            By.CLASS_NAME('inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14')).text
+            By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
         bio = bio.replace('…\nsee more', '')
     except NoSuchElementException:
         print("This user doesn't have a bio.")
@@ -69,15 +69,15 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
                                                          driver=driver, parent=profile_section)
     if experience_section:
         experiences_list_element = experience_section.find_element(
-            By.CLASS_NAME('pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more'))
-        experiences_list_li_elements = experiences_list_element.find_elements(By.CSS_SELECTOR('li'))
+            By.CLASS_NAME, 'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
+        experiences_list_li_elements = experiences_list_element.find_elements(By.CSS_SELECTOR, 'li')
 
         for li in experiences_list_li_elements:
-            title = li.find_element(By.CLASS_NAME('t-16.t-black.t-bold')).text
+            title = li.find_element(By.CLASS_NAME, 't-16.t-black.t-bold').text
             description: str
             try:
                 description = li.find_element(
-                    By.CLASS_NAME('inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal')).text
+                    By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
                 description = description.replace('…\nsee more', '')
             except NoSuchElementException:
                 description = "No description."
@@ -102,11 +102,11 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
 
         # Top 3 Skills listed
         skills_top_list_element = skills_section.find_element(
-            By.CLASS_NAME('pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1'))
-        skills_top_list_li_elements = skills_top_list_element.find_elements(By.CSS_SELECTOR('li'))
+            By.CLASS_NAME, 'pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1')
+        skills_top_list_li_elements = skills_top_list_element.find_elements(By.CSS_SELECTOR, 'li')
         # The rest of the skills
-        skills_extra_list_element = skills_section.find_element(By.ID('skill-categories-expanded'))
-        skills_extra_list_li_elements = skills_extra_list_element.find_elements(By.CSS_SELECTOR('li'))
+        skills_extra_list_element = skills_section.find_element(By.ID, 'skill-categories-expanded')
+        skills_extra_list_li_elements = skills_extra_list_element.find_elements(By.CSS_SELECTOR, 'li')
 
         # Agglomerate all skill li elements
         all_skills_li_elements = []
@@ -121,7 +121,7 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
                 all_skills_elements.append(skill)
                 if skill.get_attribute('class') == 'pv-skill-category-entity__name-text t-16 t-black t-bold'
                 else None
-                for skill in skills.find_elements(By.CSS_SELECTOR('*'))
+                for skill in skills.find_elements(By.CSS_SELECTOR, '*')
             ]
             for skills in all_skills_li_elements
         ]
