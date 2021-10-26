@@ -3,7 +3,7 @@ from helper_methods.linkedin_helper import linkedin_profile_baseurl as profile_b
     login, validate_profile_url
 from models.user_profile import get_user_profile
 
-driver_path = 'COSC419F-Project/assets/driver/chromedriver.exe'
+driver_path = '../assets/driver/chromedriver.exe'
 is_headless = False
 
 # APPLICATION START
