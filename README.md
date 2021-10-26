@@ -20,14 +20,14 @@ Run `python main.py` to start the application.
 
 
 ## Running Unit Tests
-- To run all tests run `python -m unittest <path to tests directory>` in a command terminal.
+- To run all tests run `python -m unittest discover -s <path to tests directory>` in a command terminal.
 
 - To run a specific test file:
     - Run the test file directly `python <test_file>.py
     - Run `python -m unittest <test_file>.<TestClass>`
 
 - To run a specific test
-    - Run `python -m unittest <test_file>.<TestClass>.<test_file>.<test_name>`
+    - Run `python -m unittest <test_file>.<TestClass>.<test_name>`
 
 
 
