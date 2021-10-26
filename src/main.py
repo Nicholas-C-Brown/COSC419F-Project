@@ -1,6 +1,7 @@
-from helper.linkedin_helper import linkedin_profile_baseurl as profile_baseurl, linkedin_exampleurl as example_url, login, validate_profile_url
-from helper.driver_helper import configure_driver as configure
-from models.user_profile import UserProfile, get_user_profile
+from helper_methods.driver_helper import configure_driver as configure
+from helper_methods.linkedin_helper import linkedin_profile_baseurl as profile_baseurl, linkedin_exampleurl as example_url, \
+    login, validate_profile_url
+from models.user_profile import get_user_profile
 
 driver_path = 'COSC419F-Project/assets/driver/chromedriver.exe'
 is_headless = True
@@ -11,7 +12,7 @@ is_headless = True
 print("Enter your LinkedIn profile URL.")
 url = profile_baseurl + input(profile_baseurl)
 
-if(not validate_profile_url(url)):
+if not validate_profile_url(url):
     print("\nPlease enter a valid url.\nExample: " + example_url)
     exit(1)
 

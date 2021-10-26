@@ -1,10 +1,10 @@
 from typing import List
 from selenium.webdriver.chrome.webdriver import WebDriver
-from helper.driver_helper import scroll_until_find_by_class_name
+from helper_methods.driver_helper import scroll_until_find_by_class_name
 from models.work_experience import WorkExperience
 
-class UserProfile:
 
+class UserProfile:
     name: str
     bio: str
     skills = List[str]
@@ -34,9 +34,10 @@ class UserProfile:
         print("About: " + self.bio)
         print("Work Experience:")
         print(self.experiences_to_string())
-        print("Skills: " )
+        print("Skills: ")
         print(self.skills_to_string())
         print("-----------------------------------\n")
+
 
 def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     # Go to user's profile page
@@ -49,7 +50,8 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     profile_section = driver.find_element_by_class_name('profile-detail')
     bio: str = ""
     try:
-        bio = profile_section.find_element_by_class_name('inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
+        bio = profile_section.find_element_by_class_name(
+            'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
         bio = bio.replace('…\nsee more', '')
     except:
         print("This user doesn't have a bio.")
@@ -57,16 +59,19 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     # Get user's work experiences
     experiences_list: List[WorkExperience] = []
 
-    experience_section = scroll_until_find_by_class_name(class_name='pv-profile-section.experience-section.ember-view', driver=driver, parent=profile_section)
-    if(experience_section):
-        experiences_list_element = experience_section.find_element_by_class_name('pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
+    experience_section = scroll_until_find_by_class_name(class_name='pv-profile-section.experience-section.ember-view',
+                                                         driver=driver, parent=profile_section)
+    if (experience_section):
+        experiences_list_element = experience_section.find_element_by_class_name(
+            'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
         experiences_list_li_elements = experiences_list_element.find_elements_by_css_selector('li')
 
         for li in experiences_list_li_elements:
             title = li.find_element_by_class_name('t-16.t-black.t-bold').text
             description: str
             try:
-                description = li.find_element_by_class_name('inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
+                description = li.find_element_by_class_name(
+                    'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
                 description = description.replace('…\nsee more', '')
             except:
                 description = "No description."
@@ -79,14 +84,19 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     # Get user's skills
     skills_list: List[str] = []
 
-    skills_section = scroll_until_find_by_class_name(class_name='pv-profile-section.pv-skill-categories-section.artdeco-card.mt4.p5.ember-view', driver=driver, parent=profile_section)
-    if(skills_section):
+    skills_section = scroll_until_find_by_class_name(
+        class_name='pv-profile-section.pv-skill-categories-section.artdeco-card.mt4.p5.ember-view', driver=driver,
+        parent=profile_section)
+    if (skills_section):
 
-        skills_show_more_button = scroll_until_find_by_class_name(class_name='pv-profile-section__card-action-bar.pv-skills-section__additional-skills.artdeco-container-card-action-bar.artdeco-button.artdeco-button--tertiary.artdeco-button--3.artdeco-button--fluid.artdeco-button--muted', driver=driver, parent=skills_section)
+        skills_show_more_button = scroll_until_find_by_class_name(
+            class_name='pv-profile-section__card-action-bar.pv-skills-section__additional-skills.artdeco-container-card-action-bar.artdeco-button.artdeco-button--tertiary.artdeco-button--3.artdeco-button--fluid.artdeco-button--muted',
+            driver=driver, parent=skills_section)
         skills_show_more_button.click()
 
         # Top 3 Skills listed
-        skills_top_list_element = skills_section.find_element_by_class_name('pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1')
+        skills_top_list_element = skills_section.find_element_by_class_name(
+            'pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1')
         skills_top_list_li_elements = skills_top_list_element.find_elements_by_css_selector('li')
         # The rest of the skills
         skills_extra_list_element = skills_section.find_element_by_id('skill-categories-expanded')
