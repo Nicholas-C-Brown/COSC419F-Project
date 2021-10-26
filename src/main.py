@@ -11,11 +11,13 @@ linkedin_profile_baseurl = "https://www.linkedin.com/in/"
 # APPLICATION START
 
 # Get url from user
-url = linkedin_profile_baseurl + gui.prompt_for_url()
+while True:
+    url = gui.prompt_for_url(linkedin_profile_baseurl)
+    if validators.url(url):
+        break
+    else:
+        gui.show_error_message("Please enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
 
-if not validators.url(url):
-    print("\nPlease enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
-    exit(1)
 
 
 # Start Chrome Webdriver
