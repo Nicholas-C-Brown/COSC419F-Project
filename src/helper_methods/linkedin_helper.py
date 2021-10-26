@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 import time
 import validators
@@ -11,14 +10,14 @@ password = "419CEpicStyle"
 # username = "brown.nicholas360+1@gmail.com"
 # password = "COSC419F-Project"
 
-#LinkedIn URLs
+# LinkedIn URLs
 linkedin_baseurl = "https://www.linkedin.com/"
 linkedin_loginurl = linkedin_baseurl + "login"
 linkedin_profile_baseurl = linkedin_baseurl + "in/"
 linkedin_exampleurl = linkedin_profile_baseurl + "nicholas-c-brown"
 
-def login(driver: webdriver):
 
+def login(driver: webdriver):
     driver.get(linkedin_loginurl)
 
     usernamefield = driver.find_element_by_id("username")
@@ -34,22 +33,21 @@ def login(driver: webdriver):
 
     time.sleep(.2)
 
+
 # TODO Needs unit test
 def validate_url(url: str) -> bool:
-    if(not validators.url(url)):
+    if not validators.url(url):
         return False
 
-    if(not url.startswith(linkedin_baseurl)):
+    if not url.startswith(linkedin_baseurl):
         return False
 
     return True
 
+
 # TODO Needs unit test
 def validate_profile_url(url: str) -> bool:
-    if(not url.startswith(linkedin_profile_baseurl)):
+    if not url.startswith(linkedin_profile_baseurl):
         return False
 
     return validate_url(url)
-
-
-

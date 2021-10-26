@@ -18,6 +18,17 @@ class TestLinkedInHelper(unittest.TestCase):
 
         self.assertTrue(validate_url(url_valid))
 
+    def test_validate_profile_url(self):
+        url_invalid1 = "https://www.linkedin.com/"
+        url_invalid2 = "https://www.linkedin.com/feed/"
+        url_valid = "https://www.linkedin.com/in/nicholas-c-brown"
 
+        self.assertFalse(validate_profile_url(url_invalid1))
+        self.assertFalse(validate_profile_url(url_invalid2))
+
+        self.assertTrue(validate_profile_url(url_valid))
+
+
+# Run tests by running the python file
 if __name__ == '__main__':
     unittest.main()
