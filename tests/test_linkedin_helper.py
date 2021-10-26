@@ -1,7 +1,8 @@
+import os.path
 import unittest
 import sys
-sys.path.append('./src/helper_methods')
-from linkedin_helper import validate_url, validate_profile_url
+sys.path.append(os.path.join(sys.path[0], '../src'))
+from helper_methods.linkedin_helper import validate_url, validate_profile_url
 
 
 class TestLinkedInHelper(unittest.TestCase):
