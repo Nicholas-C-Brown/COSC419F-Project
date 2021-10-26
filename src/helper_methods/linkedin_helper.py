@@ -34,7 +34,7 @@ def login(driver: webdriver):
 
     time.sleep(.2)
 
-
+# TODO Needs unit test
 def validate_url(url: str) -> bool:
     if(not validators.url(url)):
         return False
@@ -44,7 +44,7 @@ def validate_url(url: str) -> bool:
 
     return True
 
-
+# TODO Needs unit test
 def validate_profile_url(url: str) -> bool:
     if(not url.startswith(linkedin_profile_baseurl)):
         return False

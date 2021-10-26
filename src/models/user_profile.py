@@ -16,12 +16,14 @@ class UserProfile:
         self.work_experiences = work_experiences
         self.skills = skills
 
+# TODO Needs unit test
     def experiences_to_string(self) -> str:
         s = ""
         for experience in self.work_experiences:
             s += "  -" + experience.title + "\n" + experience.desc + "\n\n"
         return s
 
+# TODO Needs unit test
     def skills_to_string(self) -> str:
         s = ""
         for skill in self.skills:
