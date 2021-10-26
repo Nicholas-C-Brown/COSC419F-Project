@@ -2,7 +2,7 @@ import driverHelper
 import validators
 
 
-driver_path = '../assets/driver/chromedriver.exe'
+driver_path = 'assets/driver/chromedriver.exe'
 is_headless = False
 
 linkedin_profile_baseurl = "https://www.linkedin.com/in/"
