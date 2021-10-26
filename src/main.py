@@ -16,12 +16,10 @@ while True:
     if validators.url(url):
         break
     else:
-        gui.show_error_message("Please enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
-
+        gui.show_error_message(
+            "Please enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
 
 
 # Start Chrome Webdriver
 driver = driverHelper.configure_driver(driver_path, is_headless)
 driver.get(url)
-
-

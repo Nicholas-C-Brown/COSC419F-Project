@@ -2,6 +2,7 @@ import tkinter as tk
 
 # Write a function that opens a GUI and lets the user input their linkedin name
 
+
 def prompt_for_url(base_url):
     window = tk.Tk()
     window.title("Enter Linkedin URL")
@@ -18,6 +19,8 @@ def prompt_for_url(base_url):
     return name.get()
 
 # Write a function that shows an error message
+
+
 def show_error_message(message):
     window = tk.Tk()
     window.title("Error")
