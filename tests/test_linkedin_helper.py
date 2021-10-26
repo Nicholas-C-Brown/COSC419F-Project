@@ -1,4 +1,6 @@
 import unittest
+import sys
+sys.path.append('./src/helper_methods')
 from linkedin_helper import validate_url, validate_profile_url
 
 
