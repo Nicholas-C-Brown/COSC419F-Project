@@ -1,25 +1,26 @@
-import driverHelper
-import validators
-
+from helper_methods.driver_helper import configure_driver as configure
+from helper_methods.linkedin_helper import linkedin_profile_baseurl as profile_baseurl, linkedin_exampleurl as example_url, \
+    login, validate_profile_url
+from models.user_profile import get_user_profile
 
 driver_path = 'assets/driver/chromedriver.exe'
 is_headless = False
-
-linkedin_profile_baseurl = "https://www.linkedin.com/in/"
 
 # APPLICATION START
 
 # Get url from user
 print("Enter your LinkedIn profile URL.")
-url = linkedin_profile_baseurl + input(linkedin_profile_baseurl)
+url = profile_baseurl + input(profile_baseurl)
 
-if not validators.url(url):
-    print("\nPlease enter a valid url.\nExample: https://www.linkedin.com/in/nicholas-c-brown")
+if not validate_profile_url(url):
+    print("\nPlease enter a valid url.\nExample: " + example_url)
     exit(1)
 
+# Start Chrome Webdriver and Login
+driver = configure(driver_path, is_headless)
+login(driver)
 
-# Start Chrome Webdriver
-driver = driverHelper.configure_driver(driver_path, is_headless)
-driver.get(url)
+user_profile = get_user_profile(url, driver)
 
+user_profile.print_profile()
 
