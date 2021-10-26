@@ -1,6 +1,7 @@
+import validators
+
 from helper_methods.driver_helper import configure_driver as configure
-from helper_methods.linkedin_helper import linkedin_profile_baseurl as profile_baseurl, linkedin_exampleurl as example_url, \
-    login, validate_profile_url
+from helper_methods.linkedin_helper import login, linkedin_profile_baseurl
 from models.user_profile import get_user_profile
 import gui
 
