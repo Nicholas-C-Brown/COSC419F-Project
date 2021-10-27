@@ -29,5 +29,8 @@ Run `python main.py` to start the application.
 - To run a specific test
     - Run `python -m unittest <test_file>.<TestClass>.<test_name>`
 
+## Running PyLint
+Run `pylint <directory>` from the command terminal to run pylint on all files in the given directory.
+
 
 
