@@ -27,8 +27,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pipenv shell
-        pipenv sync -d
+        pipenv install --deploy --dev
 
     - name: Run PyLint
       run: |
