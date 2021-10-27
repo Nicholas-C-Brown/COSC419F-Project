@@ -21,5 +21,6 @@ driver = configure(DRIVER_PATH, IS_HEADLESS)
 login(driver)
 
 user_profile = get_user_profile(url, driver)
+driver.close()
 
 user_profile.print_profile()
