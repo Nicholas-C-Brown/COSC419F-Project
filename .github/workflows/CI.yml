@@ -31,7 +31,7 @@ jobs:
 
     - name: Run PyLint
       run: |
-        pipenv run pylint src --fail-under=10
+        pipenv run pylint src --fail-under=9
 
     - name: Run Unit Tests
       run: |
