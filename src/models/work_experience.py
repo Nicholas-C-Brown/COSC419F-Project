@@ -1,5 +1,8 @@
 
 class WorkExperience:
+    """
+    Stores the information of a LinkedIn Work Experience entry
+    """
 
     title: str
     desc: str
