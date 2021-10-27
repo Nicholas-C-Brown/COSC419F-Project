@@ -1,33 +1,34 @@
-from selenium import webdriver
 import time
 import validators
-
-# Dummy profile credentials
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 
-username = "cardiacexorcist+1@gmail.com"
-password = "419CEpicStyle"
 
-# New Credentials once linkedin is done being a dickhead
-# username = "brown.nicholas360+1@gmail.com"
-# password = "COSC419F-Project"
+# Dummy profile credentials
+USERNAME = "COSC419F.Project@gmail.com"
+PASSWORD = "%COSC419F-Project%"
 
 # LinkedIn URLs
-linkedin_baseurl = "https://www.linkedin.com/"
-linkedin_loginurl = linkedin_baseurl + "login"
-linkedin_profile_baseurl = linkedin_baseurl + "in/"
-linkedin_exampleurl = linkedin_profile_baseurl + "nicholas-c-brown"
+BASEURL = "https://www.linkedin.com/"
+LOGINURL = BASEURL + "login"
+PROFILEURL = BASEURL + "in/"
+EXAMPLEURL = PROFILEURL + "nicholas-c-brown"
 
 
 def login(driver: webdriver):
-    driver.get(linkedin_loginurl)
+    """
+    Logs into LinkedIn with a dummy account
+
+    :param driver: The Chrome WebDriver instance
+    """
+    driver.get(LOGINURL)
 
     usernamefield = driver.find_element(By.ID, "username")
     passwordfield = driver.find_element(By.ID, "password")
 
-    passwordfield.send_keys(password)
+    passwordfield.send_keys(PASSWORD)
     time.sleep(0.1)
-    usernamefield.send_keys(username)
+    usernamefield.send_keys(USERNAME)
     time.sleep(0.1)
 
     log_in_button = driver.find_element_by_xpath("//*[@type='submit']")
@@ -36,20 +37,30 @@ def login(driver: webdriver):
     time.sleep(.2)
 
 
-# TODO Needs unit test
 def validate_url(url: str) -> bool:
+    """
+    Validates the given URL is a valid LinkedIn URL
+
+    :param url: The URL to validate
+    :return: The URL's validity status
+    """
     if not validators.url(url):
         return False
 
-    if not url.startswith(linkedin_baseurl):
+    if not url.startswith(BASEURL):
         return False
 
     return True
 
 
-# TODO Needs unit test
 def validate_profile_url(url: str) -> bool:
-    if not url.startswith(linkedin_profile_baseurl):
+    """
+        Validates the given URL is a valid LinkedIn Profile URL
+
+        :param url: The URL to validate
+        :return: The URL's validity status
+        """
+    if not url.startswith(PROFILEURL):
         return False
 
     return validate_url(url)

@@ -9,6 +9,9 @@ from models.work_experience import WorkExperience
 
 
 class UserProfile:
+    """
+    Holds the information of a LinkedIn User
+    """
     name: str
     bio: str
     skills = List[str]
@@ -20,21 +23,34 @@ class UserProfile:
         self.work_experiences = work_experiences
         self.skills = skills
 
-# TODO Needs unit test
+    # TODO Needs unit test
     def experiences_to_string(self) -> str:
-        s = ""
-        for experience in self.work_experiences:
-            s += "  -" + experience.title + "\n" + experience.desc + "\n\n"
-        return s
+        """
+        Converts the User's work experiences list to a string.
 
-# TODO Needs unit test
+        :return: A string consisting all of the User's work experiences
+        """
+        string = ""
+        for experience in self.work_experiences:
+            string += "  -" + experience.title + "\n" + experience.desc + "\n\n"
+        return string
+
+    # TODO Needs unit test
     def skills_to_string(self) -> str:
-        s = ""
+        """
+        Converts the User's skills list to a string.
+
+        :return: A string consisting all of the User's skills
+        """
+        string = ""
         for skill in self.skills:
-            s += "  -" + skill + "\n"
-        return s
+            string += "  -" + skill + "\n"
+        return string
 
     def print_profile(self):
+        """
+        Prints the User's information to the console.
+        """
         print("-----------------------------------\n")
         print("Name: " + self.name)
         print("About: " + self.bio)
@@ -45,6 +61,7 @@ class UserProfile:
         print("-----------------------------------\n")
 
 
+# TODO Refactor to use helper methods
 def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
     # Go to user's profile page
     driver.get(url)
@@ -69,15 +86,17 @@ def get_user_profile(url: str, driver: WebDriver) -> UserProfile:
                                                          driver=driver, parent=profile_section)
     if experience_section:
         experiences_list_element = experience_section.find_element(
-            By.CLASS_NAME, 'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
+            By.CLASS_NAME,
+            'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
         experiences_list_li_elements = experiences_list_element.find_elements(By.CSS_SELECTOR, 'li')
 
-        for li in experiences_list_li_elements:
-            title = li.find_element(By.CLASS_NAME, 't-16.t-black.t-bold').text
+        for list_element in experiences_list_li_elements:
+            title = list_element.find_element(By.CLASS_NAME, 't-16.t-black.t-bold').text
             description: str
             try:
-                description = li.find_element(
-                    By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
+                description = list_element.find_element(
+                    By.CLASS_NAME,
+                    'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
                 description = description.replace('…\nsee more', '')
             except NoSuchElementException:
                 description = "No description."
