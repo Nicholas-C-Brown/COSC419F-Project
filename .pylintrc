@@ -4,3 +4,7 @@ disable=
     C0301, #line-too-long
     W0106, #expression-not-assigned
     R0903, #too-few-public-methods
+    E0611, #no-name-in-module
+    I1101, #c-extension-no-member
+
+ignore=user_interfaces
