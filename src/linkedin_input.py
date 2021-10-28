@@ -43,4 +43,4 @@ class LinkedInInput:
             user_profile.print_profile()
 
     def exit(self):
-        sys.exit(self.application.exec_())
+        self.application.exit()

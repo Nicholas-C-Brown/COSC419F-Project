@@ -12,4 +12,4 @@ app = QtWidgets.QApplication(sys.argv)
 settings = ApplicationSettings(DRIVER_PATH, IS_HEADLESS)
 
 linkedin_input = LinkedInInput(settings, app)
-app.exec_()
+sys.exit(app.exec_())
