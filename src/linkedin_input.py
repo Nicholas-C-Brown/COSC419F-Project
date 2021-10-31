@@ -117,107 +117,118 @@ class LinkedInInput:
         """
         self.application.exit()
 
+
 # TODO Refactor to use helper methods
 def get_user_profile(url: str, signal: pyqtSignal) -> UserProfile:
     signal.emit("Loading user's profile...", 1)
 
     # Start Chrome Webdriver and Login
     driver = configure_driver(ApplicationSettings.DRIVER_PATH, ApplicationSettings.IS_HEADLESS)
-    login(driver)
 
-    # Go to user's profile page
-    driver.get(url)
+    user_profile = UserProfile("None", "None", [], [])
 
-    signal.emit("Scraping user's name...", 2)
-    # Get user's name
-    name = driver.find_element(By.CLASS_NAME, 'text-heading-xlarge.inline.t-24.v-align-middle.break-words').text
-
-    signal.emit("Scraping user's bio...", 3)
-    # Get user's bio
-    profile_section = driver.find_element(By.CLASS_NAME, 'profile-detail')
-    bio: str = ""
     try:
-        bio = profile_section.find_element(
-            By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
-        bio = bio.replace('…\nsee more', '')
-    except NoSuchElementException:
-        print("This user doesn't have a bio.")
+        login(driver)
+        # Go to user's profile page
+        driver.get(url)
 
-    signal.emit("Scraping user's work experiences...", 3)
-    # Get user's work experiences
-    experiences_list: List[WorkExperience] = []
+        signal.emit("Scraping user's name...", 2)
+        # Get user's name
+        name = driver.find_element(By.CLASS_NAME, 'text-heading-xlarge.inline.t-24.v-align-middle.break-words').text
 
-    experience_section = scroll_until_find_by_class_name(class_name='pv-profile-section.experience-section.ember-view',
-                                                         driver=driver, parent=profile_section)
-    if experience_section:
-        experiences_list_element = experience_section.find_element(
-            By.CLASS_NAME,
-            'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
-        experiences_list_li_elements = experiences_list_element.find_elements(By.CSS_SELECTOR, 'li')
+        signal.emit("Scraping user's bio...", 3)
+        # Get user's bio
+        profile_section = driver.find_element(By.CLASS_NAME, 'profile-detail')
+        bio: str = ""
+        try:
+            bio = profile_section.find_element(
+                By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
+            bio = bio.replace('…\nsee more', '')
+        except NoSuchElementException:
+            print("This user doesn't have a bio.")
 
-        for list_element in experiences_list_li_elements:
-            title = list_element.find_element(By.CLASS_NAME, 't-16.t-black.t-bold').text
-            description: str
-            try:
-                description = list_element.find_element(
-                    By.CLASS_NAME,
-                    'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
-                description = description.replace('…\nsee more', '')
-            except NoSuchElementException:
-                description = "No description."
+        signal.emit("Scraping user's work experiences...", 3)
+        # Get user's work experiences
+        experiences_list: List[WorkExperience] = []
 
-            experiences_list.append(WorkExperience(title, description))
+        experience_section = scroll_until_find_by_class_name(
+            class_name='pv-profile-section.experience-section.ember-view',
+            driver=driver, parent=profile_section)
+        if experience_section:
+            experiences_list_element = experience_section.find_element(
+                By.CLASS_NAME,
+                'pv-profile-section__section-info.section-info.pv-profile-section__section-info--has-no-more')
+            experiences_list_li_elements = experiences_list_element.find_elements(By.CSS_SELECTOR, 'li')
 
-    else:
-        print("User doesn't have any work experiences")
+            for list_element in experiences_list_li_elements:
+                title = list_element.find_element(By.CLASS_NAME, 't-16.t-black.t-bold').text
+                description: str
+                try:
+                    description = list_element.find_element(
+                        By.CLASS_NAME,
+                        'inline-show-more-text.inline-show-more-text--is-collapsed.pv-entity__description.t-14.t-black.t-normal').text
+                    description = description.replace('…\nsee more', '')
+                except NoSuchElementException:
+                    description = "No description."
 
-    signal.emit("Scraping user's skills...", 4)
-    # Get user's skills
-    skills_list: List[str] = []
+                experiences_list.append(WorkExperience(title, description))
 
-    skills_section = scroll_until_find_by_class_name(
-        class_name='pv-profile-section.pv-skill-categories-section.artdeco-card.mt4.p5.ember-view', driver=driver,
-        parent=profile_section)
+        else:
+            print("User doesn't have any work experiences")
 
-    if skills_section:
-        skills_show_more_button = scroll_until_find_by_class_name(
-            class_name='pv-profile-section__card-action-bar.pv-skills-section__additional-skills.artdeco-container-card-action-bar.artdeco-button.artdeco-button--tertiary.artdeco-button--3.artdeco-button--fluid.artdeco-button--muted',
-            driver=driver, parent=skills_section)
-        skills_show_more_button.click()
+        signal.emit("Scraping user's skills...", 4)
+        # Get user's skills
+        skills_list: List[str] = []
 
-        # Top 3 Skills listed
-        skills_top_list_element = skills_section.find_element(
-            By.CLASS_NAME, 'pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1')
-        skills_top_list_li_elements = skills_top_list_element.find_elements(By.CSS_SELECTOR, 'li')
-        # The rest of the skills
-        skills_extra_list_element = skills_section.find_element(By.ID, 'skill-categories-expanded')
-        skills_extra_list_li_elements = skills_extra_list_element.find_elements(By.CSS_SELECTOR, 'li')
+        skills_section = scroll_until_find_by_class_name(
+            class_name='pv-profile-section.pv-skill-categories-section.artdeco-card.mt4.p5.ember-view', driver=driver,
+            parent=profile_section)
 
-        # Agglomerate all skill li elements
-        all_skills_li_elements = []
-        [all_skills_li_elements.append(s) for s in skills_top_list_li_elements]
-        [all_skills_li_elements.append(s) for s in skills_extra_list_li_elements]
+        if skills_section:
+            skills_show_more_button = scroll_until_find_by_class_name(
+                class_name='pv-profile-section__card-action-bar.pv-skills-section__additional-skills.artdeco-container-card-action-bar.artdeco-button.artdeco-button--tertiary.artdeco-button--3.artdeco-button--fluid.artdeco-button--muted',
+                driver=driver, parent=skills_section)
+            skills_show_more_button.click()
 
-        # Store all skill text elements in a list
-        all_skills_elements = []
+            # Top 3 Skills listed
+            skills_top_list_element = skills_section.find_element(
+                By.CLASS_NAME,
+                'pv-skill-categories-section__top-skills.pv-profile-section__section-info.section-info.pb1')
+            skills_top_list_li_elements = skills_top_list_element.find_elements(By.CSS_SELECTOR, 'li')
+            # The rest of the skills
+            skills_extra_list_element = skills_section.find_element(By.ID, 'skill-categories-expanded')
+            skills_extra_list_li_elements = skills_extra_list_element.find_elements(By.CSS_SELECTOR, 'li')
 
-        [
+            # Agglomerate all skill li elements
+            all_skills_li_elements = []
+            [all_skills_li_elements.append(s) for s in skills_top_list_li_elements]
+            [all_skills_li_elements.append(s) for s in skills_extra_list_li_elements]
+
+            # Store all skill text elements in a list
+            all_skills_elements = []
+
             [
-                all_skills_elements.append(skill)
-                if skill.get_attribute('class') == 'pv-skill-category-entity__name-text t-16 t-black t-bold'
-                else None
-                for skill in skills.find_elements(By.CSS_SELECTOR, '*')
+                [
+                    all_skills_elements.append(skill)
+                    if skill.get_attribute('class') == 'pv-skill-category-entity__name-text t-16 t-black t-bold'
+                    else None
+                    for skill in skills.find_elements(By.CSS_SELECTOR, '*')
+                ]
+                for skills in all_skills_li_elements
             ]
-            for skills in all_skills_li_elements
-        ]
 
-        [skills_list.append(s.text) for s in all_skills_elements]
+            [skills_list.append(s.text) for s in all_skills_elements]
 
-    else:
-        print("User doesn't have any skills listed")
+        else:
+            print("User doesn't have any skills listed")
 
-    # Make sure to close the driver
-    driver.close()
-    signal.emit("Finished!", 5)
+        user_profile = UserProfile(name=name, bio=bio, work_experiences=experiences_list, skills=skills_list)
 
-    return UserProfile(name=name, bio=bio, work_experiences=experiences_list, skills=skills_list)
+    except NoSuchElementException:
+        print("User page doesn't exist.")
+    finally:
+        # Make sure to close the driver
+        driver.close()
+        signal.emit("Finished!", 5)
+
+    return user_profile
