@@ -6,5 +6,6 @@ disable=
     R0903, #too-few-public-methods
     E0611, #no-name-in-module
     I1101, #c-extension-no-member
+    R1705, #no-else-return
 
 ignore=user_interfaces

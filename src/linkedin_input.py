@@ -1,10 +1,13 @@
+import sys
 from typing import List
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 
 from application_settings import ApplicationSettings
 from helper_methods.driver_helper import configure_driver, scroll_until_find_by_class_name
@@ -91,6 +94,8 @@ class LinkedInInput:
         if not validate_profile_url(url):
             self.interface.lbl_invalid.setVisible(True)
         else:
+            # Disable submission screen
+
             # Create progress bar window
             self.progress_bar = progress_bar = ProgressBar(title="Collecting user information", num_steps=5)
 
@@ -111,40 +116,106 @@ class LinkedInInput:
             # Start thread
             thread.start()
 
+            # Reset
+            self.window.setEnabled(False)
+            thread.finished.connect(
+                lambda: self.window.setEnabled(True)
+            )
+
     def exit(self):
         """
         Handles the action of pressing the exit button
         """
         self.application.exit()
 
-# TODO Refactor to use helper methods
+
 def get_user_profile(url: str, signal: pyqtSignal) -> UserProfile:
-    signal.emit("Loading user's profile...", 1)
+    """
+    Scrapes LinkedIn for user information from a given profile URL
+    :param url: The user's profile URL
+    :param signal: Used to relay progress back to the main thread
+    :return: A user profile object
+    """
+
+    signal.emit("Loading user's profile...", 0)
+
+    # Init empty user profile
+    user_profile = UserProfile("None", "None", [], [])
 
     # Start Chrome Webdriver and Login
-    driver = configure_driver(ApplicationSettings.DRIVER_PATH, ApplicationSettings.IS_HEADLESS)
+    driver: WebDriver
+    try:
+        driver = configure_driver(ApplicationSettings.DRIVER_PATH, ApplicationSettings.IS_HEADLESS)
+    except WebDriverException:
+        print("Web driver path is invalid.")
+        signal.emit("Error :(", 5)
+        sys.exit(1)
+
     login(driver)
 
     # Go to user's profile page
     driver.get(url)
 
-    signal.emit("Scraping user's name...", 2)
     # Get user's name
-    name = driver.find_element(By.CLASS_NAME, 'text-heading-xlarge.inline.t-24.v-align-middle.break-words').text
+    signal.emit("Scraping user's name...", 1)
+    name = get_user_name(driver)
 
-    signal.emit("Scraping user's bio...", 3)
+    if not name:
+        print("Web page is not a valid LinkedIn user profile")
+        signal.emit("Error :(", 5)
+        driver.close()
+        return user_profile
+
+    profile_section = get_profile_section(driver)
+    if not profile_section:
+        print("User profile has no profile section")
+        signal.emit("Error :(", 5)
+        driver.close()
+        return user_profile
+
+    signal.emit("Scraping user's bio...", 2)
+    bio = get_user_bio(profile_section)
+
+    signal.emit("Scraping user's work experiences...", 3)
+    work_experience = get_user_work_experiences(driver, profile_section)
+
+    signal.emit("Scraping user's skills...", 4)
+    skills = get_user_skills(driver, profile_section)
+
+    # Make sure to close the driver
+    driver.close()
+    signal.emit("Finished!", 5)
+
+    return UserProfile(name=name, bio=bio, work_experiences=work_experience, skills=skills)
+
+
+def get_user_name(driver) -> str | None:
+    """
+    Grabs the user's
+    :param driver:
+    :return:
+    """
+    try:
+        name = driver.find_element(By.CLASS_NAME, 'text-heading-xlarge.inline.t-24.v-align-middle.break-words').text
+        return name
+    except NoSuchElementException:
+        print("Invalid user profile page.")
+        return None
+
+
+def get_user_bio(profile_section) -> str:
     # Get user's bio
-    profile_section = driver.find_element(By.CLASS_NAME, 'profile-detail')
-    bio: str = ""
     try:
         bio = profile_section.find_element(
             By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
         bio = bio.replace('…\nsee more', '')
+        return bio
     except NoSuchElementException:
         print("This user doesn't have a bio.")
+        return "No bio."
 
-    signal.emit("Scraping user's work experiences...", 3)
-    # Get user's work experiences
+
+def get_user_work_experiences(driver, profile_section) -> List[WorkExperience]:
     experiences_list: List[WorkExperience] = []
 
     experience_section = scroll_until_find_by_class_name(class_name='pv-profile-section.experience-section.ember-view',
@@ -168,10 +239,14 @@ def get_user_profile(url: str, signal: pyqtSignal) -> UserProfile:
 
             experiences_list.append(WorkExperience(title, description))
 
+        return experiences_list
+
     else:
         print("User doesn't have any work experiences")
+        return []
 
-    signal.emit("Scraping user's skills...", 4)
+
+def get_user_skills(driver, profile_section) -> List[str]:
     # Get user's skills
     skills_list: List[str] = []
 
@@ -213,11 +288,18 @@ def get_user_profile(url: str, signal: pyqtSignal) -> UserProfile:
 
         [skills_list.append(s.text) for s in all_skills_elements]
 
+        return skills_list
+
     else:
         print("User doesn't have any skills listed")
+        return []
 
-    # Make sure to close the driver
-    driver.close()
-    signal.emit("Finished!", 5)
 
-    return UserProfile(name=name, bio=bio, work_experiences=experiences_list, skills=skills_list)
+def get_profile_section(driver) -> WebElement | None:
+    section: WebElement
+    try:
+        section = driver.find_element(By.CLASS_NAME, 'profile-detail')
+        return section
+    except NoSuchElementException:
+        print("No profile section found")
+        return None

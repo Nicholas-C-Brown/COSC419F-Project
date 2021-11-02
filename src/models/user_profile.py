@@ -18,7 +18,6 @@ class UserProfile:
         self.work_experiences = work_experiences
         self.skills = skills
 
-    # TODO Needs unit test
     def experiences_to_string(self) -> str:
         """
         Converts the User's work experiences list to a string.
@@ -30,7 +29,6 @@ class UserProfile:
             string += "  -" + experience.title + "\n" + experience.desc + "\n\n"
         return string
 
-    # TODO Needs unit test
     def skills_to_string(self) -> str:
         """
         Converts the User's skills list to a string.
