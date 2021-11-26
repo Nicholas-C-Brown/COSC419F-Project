@@ -4,7 +4,7 @@ from typing import List
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QApplication
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException, SessionNotCreatedException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -14,6 +14,7 @@ from helper_methods.driver_helper import configure_driver, scroll_until_find_by_
 from helper_methods.linkedin_helper import validate_profile_url, PROFILEURL as LINKEDIN_PROFILEURL, \
     EXAMPLEURL as LINKEDIN_EXAMPLEURL, login
 from progress_bar import ProgressBar
+from skillset_scraper import scrape_user_skills
 from user_interfaces.ui_linkedin_input import Ui_LinkedInInput
 from models.user_profile import UserProfile
 from models.work_experience import WorkExperience
@@ -78,11 +79,12 @@ class LinkedInInput:
         """
         self.user_profile = profile
 
-    def print_profile(self):
+    def scrape_careers(self):
         """
-        Prints the current user profile
+        Scrapes careers for the current user profile
         """
-        self.user_profile.print_profile()
+        career_dict = scrape_user_skills(self.user_profile, True)
+        print(career_dict)
 
     def submit(self):
         """
@@ -109,7 +111,7 @@ class LinkedInInput:
             thread.change_value.connect(self.set_progress)
             thread.result.connect(self.set_profile)
             thread.finished.connect(progress_bar.window.close)
-            thread.finished.connect(self.print_profile)
+            thread.finished.connect(self.scrape_careers)
             thread.finished.connect(thread.quit)
             thread.finished.connect(thread.deleteLater)
 
@@ -146,6 +148,9 @@ def get_user_profile(url: str, signal: pyqtSignal) -> UserProfile:
     driver: WebDriver
     try:
         driver = configure_driver(ApplicationSettings.DRIVER_PATH, ApplicationSettings.IS_HEADLESS)
+    except SessionNotCreatedException:
+        print("ChromeDriver is out of date.")
+        sys.exit(1)
     except WebDriverException:
         print("Web driver path is invalid.")
         signal.emit("Error :(", 5)
