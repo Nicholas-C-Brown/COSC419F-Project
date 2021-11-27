@@ -1,4 +1,3 @@
-
 class WorkExperience:
     """
     Stores the information of a LinkedIn Work Experience entry
