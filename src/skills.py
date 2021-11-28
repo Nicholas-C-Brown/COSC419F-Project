@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from user_interfaces.ui_skills import Ui_LinkedInSkills
-
+from skilljobs import SkillJobs
 
 class Skills:
     """
@@ -11,6 +11,8 @@ class Skills:
         self.window = window = QtWidgets.QDialog()
         self.interface = interface = Ui_LinkedInSkills()
         interface.setupUi(window)
+
+        self.interface.skillTable.verticalHeader().setVisible(False)
 
         self.data = data
 
@@ -31,4 +33,5 @@ class Skills:
         button = self.window.sender()
         index = self.interface.skillTable.indexAt(button.pos())
         if index.isValid():
-            print(index.row())
+            key = list(self.data)[index.row()]
+            self.skill_jobs = SkillJobs(data=self.data[key], skill=key)
