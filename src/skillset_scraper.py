@@ -5,6 +5,8 @@ from selenium.common.exceptions import WebDriverException, SessionNotCreatedExce
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
+from PyQt5.QtCore import pyqtSignal
+
 from application_settings import ApplicationSettings
 from models.career import Career
 from models.user_profile import UserProfile
@@ -81,9 +83,11 @@ def scrape_career(skill: str, all_careers: bool = False) -> List[Career]:
     return careers_list
 
 
-def scrape_user_careers(user: UserProfile, all_careers: bool = False, num_skills: int = -1) -> dict[str, List[Career]]:
+def scrape_user_careers(user: UserProfile, signal: pyqtSignal = None, all_careers: bool = False,
+                        num_skills: int = -1) -> dict[str, List[Career]]:
     """
     Collects all potential careers for each skill of a given user
+    :param signal:
     :param user:
     :param all_careers: Collect all potential careers (As opposed to top 20)
     :param num_skills: The number of skills to process for the user
@@ -91,12 +95,16 @@ def scrape_user_careers(user: UserProfile, all_careers: bool = False, num_skills
     """
     career_dict = {}
 
-    index = 0
+    if signal:
+        signal.emit("Processing user's careers...", 0)
+
+    index = 1
     for skill in user.skills:
-        if index == num_skills:
+        if index > num_skills:
             break
 
-        print("Processing skill: " + skill)
+        if signal:
+            signal.emit("Processing careers for skill: " + skill, index)
         careers = scrape_career(skill, all_careers)
 
         career_dict[skill] = careers

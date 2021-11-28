@@ -7,7 +7,7 @@ class Skills:
     Handles the creation and logic for the Skill List GUI
     """
 
-    def __init__(self, data: list, *args):
+    def __init__(self, data: dict, *args):
         self.window = window = QtWidgets.QDialog()
         self.interface = interface = Ui_LinkedInSkills()
         interface.setupUi(window)

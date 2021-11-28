@@ -105,10 +105,12 @@ class LinkedInInput:
         self.user_profile.career_dict = career_dict
 
     def display_career_info(self):
+        print(self.user_profile.career_dict)
+
         normalize_weights(self.user_profile.career_dict)
 
-        self.top_jobs = Top_Jobs(self.user_profile.predicted_jobs())
-        self.skills = Skills(self.user_profile.career_dict)
+        self.top_jobs = Top_Jobs(data=self.user_profile.predicted_jobs())
+        self.skills = Skills(data=self.user_profile.career_dict)
 
     def scrape_careers(self):
         """

@@ -64,13 +64,13 @@ class UserProfile:
             for career in career_list:
                 print("Skill: " + skill + " - " + career.to_string())
 
-    def predicted_jobs(self, number_predicts: int = 5, frequency_factor: int = 0.5):
+    def predicted_jobs(self, number_predicts: int = 5, frequency_factor: int = 0.5) -> List[Career]:
         """
         Predicts relevant jobs for the user based off of their career dictionary
         :param number_predicts: The number of jobs to predict
         :param frequency_factor: The relative weighting factor for how many times a given career appears in the dictionary
         """
-        occupation_dict = {}
+        occupation_dict: dict[Career, int] = {}
 
         num_skills = len(self.career_dict)
 
@@ -78,13 +78,11 @@ class UserProfile:
         for career_list in self.career_dict.values():
             for career in career_list:
                 if career.occupation in occupation_dict.keys():
-                    occupation_dict[career.occupation] += frequency_factor * num_skills + career.weight
+                    occupation_dict[career] += frequency_factor * num_skills + career.weight
                 else:
-                    occupation_dict[career.occupation] = frequency_factor * num_skills + career.weight
+                    occupation_dict[career] = frequency_factor * num_skills + career.weight
 
-        predictions = heapq.nlargest(number_predicts, occupation_dict, key=occupation_dict.get)
-        for prediction in predictions:
-            print(prediction)
+        return heapq.nlargest(number_predicts, occupation_dict, key=occupation_dict.get)
 
 
 def normalize_weights(career_dict: dict):
