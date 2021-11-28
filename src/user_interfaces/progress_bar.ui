@@ -26,7 +26,7 @@
    <cursorShape>WaitCursor</cursorShape>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Loading</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

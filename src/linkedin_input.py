@@ -14,6 +14,8 @@ from helper_methods.driver_helper import configure_driver, scroll_until_find_by_
 from helper_methods.linkedin_helper import validate_profile_url, PROFILEURL as LINKEDIN_PROFILEURL, \
     EXAMPLEURL as LINKEDIN_EXAMPLEURL, login
 from progress_bar import ProgressBar
+from skills import Skills
+from top_jobs import Top_Jobs
 from skillset_scraper import scrape_user_skills
 from user_interfaces.ui_linkedin_input import Ui_LinkedInInput
 from models.user_profile import UserProfile
@@ -46,6 +48,8 @@ class LinkedInInput:
     A class for handling the data collection from LinkedIn
     """
     progress_bar: ProgressBar
+    skills: Skills
+    top_jobs: Top_Jobs
     thread: SubmissionThread
     user_profile: UserProfile
 
@@ -84,6 +88,8 @@ class LinkedInInput:
         Scrapes careers for the current user profile
         """
         career_dict = scrape_user_skills(self.user_profile, True)
+        self.skills = skills = Skills(data=career_dict)
+        # self.top_jobs = top_jobs = Top_Jobs(data={0: ['Job 1', 'http://google.com']})
         print(career_dict)
 
     def submit(self):
