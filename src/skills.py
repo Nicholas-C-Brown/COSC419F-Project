@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from user_interfaces.skills import Ui_LinkedInSkills
+from user_interfaces.ui_skills import Ui_LinkedInSkills
 
 
 class Skills:
@@ -14,18 +14,18 @@ class Skills:
 
         self.data = data
 
-        self.setData()
+        self.set_data()
 
         window.show()
 
-    def setData(self):
+    def set_data(self):
         self.interface.skillTable.setRowCount(len(self.data))
         for n, key in enumerate(sorted(self.data.keys())):
             newitem = QtWidgets.QTableWidgetItem(key)
-            viewButton = QtWidgets.QPushButton('View Jobs')
-            viewButton.clicked.connect(self.view_button_clicked)
+            view_button = QtWidgets.QPushButton('View Jobs')
+            view_button.clicked.connect(self.view_button_clicked)
             self.interface.skillTable.setItem(n, 0, newitem)
-            self.interface.skillTable.setCellWidget(n, 1, viewButton)
+            self.interface.skillTable.setCellWidget(n, 1, view_button)
 
     def view_button_clicked(self):
         button = self.window.sender()

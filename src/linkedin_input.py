@@ -15,7 +15,7 @@ from helper_methods.linkedin_helper import validate_profile_url, PROFILEURL as L
     EXAMPLEURL as LINKEDIN_EXAMPLEURL, login
 from progress_bar import ProgressBar
 from skills import Skills
-from top_jobs import Top_Jobs
+from topjobs import TopJobs
 from skillset_scraper import scrape_user_careers
 from user_interfaces.ui_linkedin_input import Ui_LinkedInInput
 from models.user_profile import UserProfile, normalize_weights
@@ -65,7 +65,7 @@ class LinkedInInput:
     """
     progress_bar: ProgressBar
     skills: Skills
-    top_jobs: Top_Jobs
+    top_jobs: TopJobs
     thread: QThread
     user_profile: UserProfile
 
@@ -105,11 +105,10 @@ class LinkedInInput:
         self.user_profile.career_dict = career_dict
 
     def display_career_info(self):
-        print(self.user_profile.career_dict)
-
         normalize_weights(self.user_profile.career_dict)
+        self.user_profile.print_career_dict()
 
-        self.top_jobs = Top_Jobs(data=self.user_profile.predicted_jobs())
+        self.top_jobs = TopJobs(data=self.user_profile.predicted_jobs())
         self.skills = Skills(data=self.user_profile.career_dict)
 
     def scrape_careers(self):

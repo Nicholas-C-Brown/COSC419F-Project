@@ -4,37 +4,37 @@ from typing import List
 from PyQt5 import QtWidgets
 
 from models.career import Career
-from user_interfaces.top_jobs import Ui_top_jobs
+from user_interfaces.ui_top_jobs import Ui_TopJobs
 
 
-class Top_Jobs:
+class TopJobs:
     """
     Handles the creation and logic for the Top Job list GUI
     """
 
     def __init__(self, data: List[Career], *args):
         self.window = window = QtWidgets.QDialog()
-        self.interface = interface = Ui_top_jobs()
+        self.interface = interface = Ui_TopJobs()
         interface.setupUi(window)
 
         self.interface.tableWidget.verticalHeader().setVisible(False)
 
         self.data = data
 
-        self.setData()
+        self.set_data()
 
         window.show()
 
-    def setData(self):
+    def set_data(self):
         self.interface.tableWidget.setRowCount(len(self.data))
         index = 0
         for career in self.data:
             job = career.occupation
             newitem = QtWidgets.QTableWidgetItem(job)
-            viewButton = QtWidgets.QPushButton('View Online')
-            viewButton.clicked.connect(self.view_button_clicked)
+            view_button = QtWidgets.QPushButton('View Online')
+            view_button.clicked.connect(self.view_button_clicked)
             self.interface.tableWidget.setItem(index, 0, newitem)
-            self.interface.tableWidget.setCellWidget(index, 1, viewButton)
+            self.interface.tableWidget.setCellWidget(index, 1, view_button)
             index += 1
 
     def view_button_clicked(self):
