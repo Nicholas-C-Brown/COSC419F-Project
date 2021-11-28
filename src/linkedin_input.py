@@ -16,9 +16,9 @@ from helper_methods.linkedin_helper import validate_profile_url, PROFILEURL as L
 from progress_bar import ProgressBar
 from skills import Skills
 from top_jobs import Top_Jobs
-from skillset_scraper import scrape_user_skills
+from skillset_scraper import scrape_user_careers
 from user_interfaces.ui_linkedin_input import Ui_LinkedInInput
-from models.user_profile import UserProfile
+from models.user_profile import UserProfile, normalize_weights
 from models.work_experience import WorkExperience
 
 
@@ -43,6 +43,22 @@ class SubmissionThread(QThread):
         self.finished.emit()
 
 
+class CareerThread(QThread):
+    change_value = pyqtSignal(str, int)
+    result = pyqtSignal(dict)
+    finished = pyqtSignal()
+
+    def __init__(self, user_profile, num_skills):
+        super().__init__()
+        self.user_profile = user_profile
+        self.num_skills = num_skills
+
+    def run(self):
+        career_dict = scrape_user_careers(user=self.user_profile, signal=self.change_value, all_careers=False, num_skills=self.num_skills)
+        self.result.emit(career_dict)
+        self.finished.emit()
+
+
 class LinkedInInput:
     """
     A class for handling the data collection from LinkedIn
@@ -50,7 +66,7 @@ class LinkedInInput:
     progress_bar: ProgressBar
     skills: Skills
     top_jobs: Top_Jobs
-    thread: SubmissionThread
+    thread: QThread
     user_profile: UserProfile
 
     def __init__(self, application: QApplication):
@@ -83,14 +99,49 @@ class LinkedInInput:
         """
         self.user_profile = profile
 
+    def set_career_dict(self, career_dict):
+        if self.user_profile is None:
+            return
+        self.user_profile.career_dict = career_dict
+
+    def display_career_info(self):
+        normalize_weights(self.user_profile.career_dict)
+
+        self.top_jobs = Top_Jobs(self.user_profile.predicted_jobs())
+        self.skills = Skills(self.user_profile.career_dict)
+
     def scrape_careers(self):
         """
         Scrapes careers for the current user profile
         """
-        career_dict = scrape_user_skills(self.user_profile, True)
-        self.skills = skills = Skills(data=career_dict)
-        # self.top_jobs = top_jobs = Top_Jobs(data={0: ['Job 1', 'http://google.com']})
-        print(career_dict)
+
+        num_skills = 5
+
+        # Create progress bar window
+        self.progress_bar = progress_bar = ProgressBar(title="Processing user careers", num_steps=num_skills)
+
+        # Create thread for data collection
+        self.thread = thread = CareerThread(self.user_profile, num_skills)
+
+        # Init empty career dict
+        self.user_profile.career_dict = {}
+
+        # Setup thread connections
+        thread.change_value.connect(self.set_progress)
+        thread.result.connect(self.set_career_dict)
+        thread.finished.connect(progress_bar.window.close)
+        thread.finished.connect(self.display_career_info)
+        thread.finished.connect(thread.quit)
+        thread.finished.connect(thread.deleteLater)
+
+        # Start thread
+        thread.start()
+
+        # Reset
+        self.window.setEnabled(False)
+        thread.finished.connect(
+            lambda: self.window.setEnabled(True)
+        )
 
     def submit(self):
         """
@@ -215,7 +266,12 @@ def get_user_name(driver) -> str | None:
 
 
 def get_user_bio(profile_section) -> str:
-    # Get user's bio
+    """
+    Gets the user's bio from LinkedIn
+    :param profile_section:
+    :return: the user's bio
+    """
+
     try:
         bio = profile_section.find_element(
             By.CLASS_NAME, 'inline-show-more-text.inline-show-more-text--is-collapsed.mt4.t-14').text
@@ -227,6 +283,12 @@ def get_user_bio(profile_section) -> str:
 
 
 def get_user_work_experiences(driver, profile_section) -> List[WorkExperience]:
+    """
+    Gets the user's work experiences from LinkedIn
+    :param driver:
+    :param profile_section:
+    :return: A list of the user's work experiences
+    """
     experiences_list: List[WorkExperience] = []
 
     experience_section = scroll_until_find_by_class_name(class_name='pv-profile-section.experience-section.ember-view',
@@ -258,6 +320,12 @@ def get_user_work_experiences(driver, profile_section) -> List[WorkExperience]:
 
 
 def get_user_skills(driver, profile_section) -> List[str]:
+    """
+    Gets the user's skills from LinkedIn
+    :param driver:
+    :param profile_section:
+    :return: A list of the user's skills
+    """
     # Get user's skills
     skills_list: List[str] = []
 
@@ -307,6 +375,11 @@ def get_user_skills(driver, profile_section) -> List[str]:
 
 
 def get_profile_section(driver) -> WebElement | None:
+    """
+    Gets the profile section WebElement on a user's LinkedIn profile page
+    :param driver:
+    :return: The profile section WebElement object
+    """
     section: WebElement
     try:
         section = driver.find_element(By.CLASS_NAME, 'profile-detail')
