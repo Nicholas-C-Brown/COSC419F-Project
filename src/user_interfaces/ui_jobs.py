@@ -14,6 +14,24 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Jobs(object):
     def setupUi(self, Jobs):
         Jobs.setObjectName("Jobs")
+        Jobs.resize(430, 415)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Jobs)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label = QtWidgets.QLabel(Jobs)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
+        self.skill_label = QtWidgets.QLabel(Jobs)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.skill_label.setFont(font)
+        self.skill_label.setObjectName("skill_label")
+        self.verticalLayout.addWidget(self.skill_label)
+        self.jobTable = QtWidgets.QTableWidget(Jobs)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.jobTable.sizePolicy().hasHeightForWidth())
+        self.jobTable.setSizePolicy(sizePolicy)
         self.jobTable.setObjectName("jobTable")
         self.jobTable.setColumnCount(2)
         self.jobTable.setRowCount(0)
@@ -21,6 +39,8 @@ class Ui_Jobs(object):
         self.jobTable.setHorizontalHeaderItem(0, item)
         item = QtWidgets.QTableWidgetItem()
         self.jobTable.setHorizontalHeaderItem(1, item)
+        self.jobTable.horizontalHeader().setCascadingSectionResizes(False)
+        self.jobTable.horizontalHeader().setDefaultSectionSize(200)
         self.verticalLayout.addWidget(self.jobTable)
         self.goBackButton = QtWidgets.QPushButton(Jobs)
         self.goBackButton.setObjectName("goBackButton")
@@ -39,6 +59,7 @@ class Ui_Jobs(object):
         item = self.jobTable.horizontalHeaderItem(1)
         item.setText(_translate("Jobs", "Action"))
         self.goBackButton.setText(_translate("Jobs", "Go Back"))
+
 
 if __name__ == "__main__":
     import sys

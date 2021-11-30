@@ -41,6 +41,12 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <attribute name="horizontalHeaderCascadingSectionResizes">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>200</number>
+     </attribute>
      <column>
       <property name="text">
        <string>Job</string>
