@@ -108,7 +108,11 @@ class LinkedInInput:
         normalize_weights(self.user_profile.career_dict)
         self.user_profile.print_career_dict()
 
-        self.top_jobs = TopJobs(data=self.user_profile.predicted_jobs())
+        num_predictions = 1
+        if ApplicationSettings.NUM_PREDICTIONS >= 1:
+            num_predictions = ApplicationSettings.NUM_PREDICTIONS
+
+        self.top_jobs = TopJobs(data=self.user_profile.predicted_jobs(number_predicts=num_predictions))
         self.skills = Skills(data=self.user_profile.career_dict)
 
     def scrape_careers(self):
