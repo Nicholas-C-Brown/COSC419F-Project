@@ -3,7 +3,7 @@ from typing import List
 
 from PyQt5 import QtWidgets
 
-from models.career import Career
+from models.career_score import CareerScore
 from user_interfaces.ui_top_jobs import Ui_TopJobs
 
 
@@ -12,7 +12,7 @@ class TopJobs:
     Handles the creation and logic for the Top Job list GUI
     """
 
-    def __init__(self, data: List[Career], *args):
+    def __init__(self, data: List[CareerScore], *args):
         self.window = window = QtWidgets.QDialog()
         self.interface = interface = Ui_TopJobs()
         interface.setupUi(window)

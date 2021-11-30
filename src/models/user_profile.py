@@ -1,8 +1,12 @@
 import heapq
 
 from typing import List
+
+from models.career_score import CareerScore
 from models.career import Career
 from models.work_experience import WorkExperience
+
+from operator import attrgetter
 
 
 class UserProfile:
@@ -64,13 +68,13 @@ class UserProfile:
             for career in career_list:
                 print("Skill: " + skill + " - " + career.to_string())
 
-    def predicted_jobs(self, number_predicts: int = 5, frequency_factor: int = 0.5) -> List[Career]:
+    def predicted_jobs(self, number_predicts: int = 5, frequency_factor: int = 0.5) -> List[CareerScore]:
         """
         Predicts relevant jobs for the user based off of their career dictionary
         :param number_predicts: The number of jobs to predict
         :param frequency_factor: The relative weighting factor for how many times a given career appears in the dictionary
         """
-        occupation_dict: dict[Career, int] = {}
+        occupation_dict: dict[str, CareerScore] = {}
 
         num_skills = len(self.career_dict)
 
@@ -78,11 +82,21 @@ class UserProfile:
         for career_list in self.career_dict.values():
             for career in career_list:
                 if career.occupation in occupation_dict.keys():
-                    occupation_dict[career] += frequency_factor * num_skills + career.weight
+                    occupation_dict[career.occupation].score += frequency_factor * num_skills + career.weight
                 else:
-                    occupation_dict[career] = frequency_factor * num_skills + career.weight
+                    occupation_dict[career.occupation] = CareerScore(occupation=career.occupation, code=career.code, score=frequency_factor * num_skills + career.weight)
 
-        return heapq.nlargest(number_predicts, occupation_dict, key=occupation_dict.get)
+        career_score_list: List[CareerScore] = []
+        for i in range(number_predicts):
+            max_score: CareerScore = CareerScore("", "", 0)
+            for career in occupation_dict.values():
+                if career.score > max_score.score:
+                    max_score = career
+
+            career_score_list.append(max_score)
+            occupation_dict.pop(max_score.occupation)
+
+        return career_score_list
 
 
 def normalize_weights(career_dict: dict):

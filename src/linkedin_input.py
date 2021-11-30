@@ -116,7 +116,11 @@ class LinkedInInput:
         Scrapes careers for the current user profile
         """
 
-        num_skills = 5
+        num_skills = 0
+        if ApplicationSettings.NUM_SKILLS > 0:
+            num_skills = ApplicationSettings.NUM_SKILLS
+        else:
+            num_skills = len(self.user_profile.skills)
 
         # Create progress bar window
         self.progress_bar = progress_bar = ProgressBar(title="Processing user careers", num_steps=num_skills)
